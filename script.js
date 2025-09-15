@@ -4,6 +4,29 @@ let allMarkers = [];
 let allData = [];
 let markerClusterGroup;
 
+// Funcție pentru normalizare nume județ
+function normalizeJudet(judet) {
+    if (!judet) return '';
+    
+    // Convertim la lowercase și eliminăm diacriticele
+    const normalized = judet.toLowerCase()
+        .replace(/ă/g, 'a')
+        .replace(/â/g, 'a')
+        .replace(/î/g, 'i')
+        .replace(/ș/g, 's')
+        .replace(/ț/g, 't')
+        .trim();
+    
+    // Corectăm câteva variante comune
+    const corrections = {
+        'bucuresti': 'București',
+        'bucurești': 'București',
+        'sector': 'București'
+    };
+    
+    return corrections[normalized] || judet;
+}
+
 // Inițializare hartă
 function initMap() {
     // Creare hartă cu centrul României
@@ -259,13 +282,16 @@ function loadData() {
             alert('Eroare la conectarea la server. Verifică calea către fișierul CSV.');
         });
 }
-// Funcție pentru actualizare statistici (cu debugging)
+
+// Funcție pentru actualizare statistici (cu debugging și normalizare)
 function updateStats() {
     const totalUnitati = allData.length;
     const judeteArray = allData.map(item => item.Judet);
-    const judeteUnice = [...new Set(judeteArray)];
+    const judeteNormalize = allData.map(item => normalizeJudet(item.Judet));
+    const judeteUnice = [...new Set(judeteNormalize)];
     
     console.log('Toate județele din date:', judeteArray);
+    console.log('Județe normalizate:', judeteNormalize);
     console.log('Județe unice:', judeteUnice);
     console.log('Număr județe unice:', judeteUnice.length);
     
@@ -274,25 +300,23 @@ function updateStats() {
     judeteArray.forEach(judet => {
         frecventaJudete[judet] = (frecventaJudete[judet] || 0) + 1;
     });
-    console.log('Frecvența județelor:', frecventaJudete);
+    console.log('Frecvența județelor (înainte de normalizare):', frecventaJudete);
+    
+    // Afișăm frecvența județelor normalizate
+    const frecventaJudeteNormalize = {};
+    judeteNormalize.forEach(judet => {
+        frecventaJudeteNormalize[judet] = (frecventaJudeteNormalize[judet] || 0) + 1;
+    });
+    console.log('Frecvența județelor (după normalizare):', frecventaJudeteNormalize);
     
     document.getElementById('totalUnitati').textContent = totalUnitati;
     document.getElementById('totalJudete').textContent = judeteUnice.length;
     updateVisibleCount();
 }
-// Funcție pentru actualizare statistici
-function updateStats() {
-    const totalUnitati = allData.length;
-    const judeteUnice = [...new Set(allData.map(item => item.Judet))].length; // Corectat: Judet în loc de Județ
-    
-    document.getElementById('totalUnitati').textContent = totalUnitati;
-    document.getElementById('totalJudete').textContent = judeteUnice;
-    updateVisibleCount();
-}
 
 // Funcție pentru populare filtre
 function populateFilters() {
-    const judete = [...new Set(allData.map(item => item.Judet))].sort(); // Corectat: Judet în loc de Județ
+    const judete = [...new Set(allData.map(item => normalizeJudet(item.Judet)))].sort();
     const tipuri = [...new Set(allData.map(item => item.Tip))].sort();
     
     const filterJudet = document.getElementById('filterJudet');
@@ -331,8 +355,8 @@ function filterMarkers() {
     allMarkers.forEach(marker => {
         let includeMarker = true;
         
-        // Filtrare județ
-        if (judetSelectat && marker.judet !== judetSelectat) {
+        // Filtrare județ (cu normalizare)
+        if (judetSelectat && normalizeJudet(marker.judet) !== judetSelectat) {
             includeMarker = false;
         }
         
@@ -426,7 +450,6 @@ window.mapApp = {
     resetFilters,
     allMarkers,
     allData,
-    map
+    map,
+    normalizeJudet
 };
-
-
