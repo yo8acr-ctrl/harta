@@ -339,54 +339,13 @@ function updateStats() {
     });
     console.log('Frecvența județelor (după normalizare):', frecventaJudeteNormalize);
     
-    // Actualizăm elementele existente
     document.getElementById('totalUnitati').textContent = totalUnitati;
     
     // Afișăm numărul de județe din date și totalul
     const judeteElement = document.getElementById('totalJudete');
     judeteElement.textContent = `${numarJudeteDinDate}/${numarTotalJudete}`;
-    
-    // Adăugăm tooltip informativ
-    let tooltipText = `Datele acoperă ${numarJudeteDinDate} din cele ${numarTotalJudete} județe ale României`;
-    if (judeteLipsa.length > 0) {
-        tooltipText += `\n\nJudețe lipsă din date:\n${judeteLipsa.join(', ')}`;
-    }
-    judeteElement.setAttribute('title', tooltipText);
-    judeteElement.style.cursor = 'help';
-    judeteElement.style.borderBottom = '1px dotted #999';
-    
-    // Adăugăm un element pentru județele lipsă dacă nu există
-    let judeteLipsaElement = document.getElementById('judeteLipsa');
-    if (!judeteLipsaElement) {
-        judeteLipsaElement = document.createElement('div');
-        judeteLipsaElement.id = 'judeteLipsa';
-        judeteLipsaElement.style.cssText = `
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            font-size: 14px;
-            color: #856404;
-        `;
-        
-        // Îl adăugăm după containerul de statistici existent
-        const statsContainer = document.querySelector('.stats');
-        if (statsContainer) {
-            statsContainer.appendChild(judeteLipsaElement);
-        }
-    }
-    
-    // Afișăm județele lipsă
-    if (judeteLipsa.length > 0) {
-        judeteLipsaElement.innerHTML = `
-            <strong>⚠️ Atenție: Lipsesc ${judeteLipsa.length} județe din date:</strong><br>
-            <span style="color: #d63031;">${judeteLipsa.join(', ')}</span>
-        `;
-        judeteLipsaElement.style.display = 'block';
-    } else {
-        judeteLipsaElement.style.display = 'none';
-    }
+    judeteElement.title = `Datele acoperă ${numarJudeteDinDate} din cele ${numarTotalJudete} județe ale României` +
+                          (judeteLipsa.length > 0 ? `\nLipsesc: ${judeteLipsa.join(', ')}` : '');
     
     updateVisibleCount();
 }
