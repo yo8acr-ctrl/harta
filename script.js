@@ -8,13 +8,13 @@ let markerClusterGroup;
 function initMap() {
     // Creare hartă cu centrul României
     map = L.map('map').setView([45.9432, 24.9668], 7);
-
+    
     // Adăugare tile layer (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 18
     }).addTo(map);
-
+    
     // Inițializare cluster group
     markerClusterGroup = L.markerClusterGroup({
         chunkedLoading: true,
@@ -24,7 +24,7 @@ function initMap() {
         maxClusterRadius: 80
     });
     map.addLayer(markerClusterGroup);
-
+    
     // Încărcare date
     loadData();
 }
@@ -44,7 +44,7 @@ function createCustomIcon(type, name) {
         'Școală Profesională': '#27ae60',
         'Liceu Teoretic': '#c0392b',
         'Colegiu Economic': '#d35400',
-        'Liceul de Arte': '#9b59b6',
+        'Liceu de Arte': '#9b59b6',
         'Colegiu Național Pedagogic': '#8e44ad',
         'Grădinița cu Program Prelungit': '#f39c12',
         'Școală Primară': '#3498db',
@@ -56,10 +56,10 @@ function createCustomIcon(type, name) {
         'Liceu Tehnologic Agricol': '#e67e22',
         'Liceu Tehnologic de Industrie Alimentară': '#d35400',
         'Liceu Tehnologic de Industrie Alimentara': '#d35400',
-        'Liceul Auto': '#e67e22',
-        'Liceul Teologic Romano-Catolic': '#8e44ad',
+        'Liceu Auto': '#e67e22',
+        'Liceu Teologic Romano-Catolic': '#8e44ad',
         'Seminarul Teologic': '#8e44ad',
-        'Clubul Copiilor': '#34995e',
+        'Clubul Copiilor': '#34495e',
         'Școala de Artă': '#9b59b6',
         'C.J.R.A.E.': '#16a085',
         'Centrul Școlar pentru Educație Incluzivă': '#16a085',
@@ -68,7 +68,7 @@ function createCustomIcon(type, name) {
         'Gradinita cu Program Prelungit': '#f39c12',
         'Grădinița Program Prelungit': '#f39c12'
     };
-
+    
     // Inițiale pentru iconiță
     const initials = name.split(' ')
         .filter(word => word.length > 0)
@@ -76,7 +76,7 @@ function createCustomIcon(type, name) {
         .slice(0, 2)
         .join('')
         .toUpperCase();
-
+    
     return L.divIcon({
         className: 'custom-div-icon',
         html: `<div style="
@@ -107,7 +107,7 @@ function addMarker(data) {
     const { Judet, 'Nume Unitati': nume, Tip, Latitudine, Longitudine } = data;
     
     if (!Latitudine || !Longitudine) return null;
-
+    
     const lat = parseFloat(Latitudine);
     const lng = parseFloat(Longitudine);
     
@@ -116,7 +116,7 @@ function addMarker(data) {
         console.warn('Coordonate invalide:', { nume, lat, lng });
         return null;
     }
-
+    
     const icon = createCustomIcon(Tip, nume);
     
     const marker = L.marker([lat, lng], { icon });
@@ -147,7 +147,7 @@ function addMarker(data) {
         autoClose: false,
         closeOnClick: false
     });
-
+    
     // Tooltip la hover
     marker.bindTooltip(nume, {
         permanent: false,
@@ -155,12 +155,12 @@ function addMarker(data) {
         offset: [0, -20],
         opacity: 0.9
     });
-
+    
     // Adăugare date la marker pentru filtrare
     marker.judet = Judet;
     marker.tip = Tip;
     marker.nume = nume.toLowerCase();
-
+    
     return marker;
 }
 
@@ -195,24 +195,11 @@ function loadData() {
                         alert('Fișierul CSV este gol sau are format greșit.');
                         return;
                     }
-                    // In loadData function, when filtering:
-allData = results.data.filter(row => {
-    const lat = row.Latitudine;
-    const lng = row.Longitudine;
-    
-    // Verifică dacă coordonatele sunt valide
-    const latValid = lat && lat !== '' && !isNaN(parseFloat(lat));
-    const lngValid = lng && lng !== '' && !isNaN(parseFloat(lng));
-    
-    if (!latValid || !lngValid) {
-        console.log('Linie invalidă:', row);
-    }
-    
-    return latValid && lngValid;
-});
+                    
                     // Verifică prima linie
                     console.log('Prima linie:', results.data[0]);
                     
+                    // Filtrare date valide
                     allData = results.data.filter(row => {
                         const lat = row.Latitudine;
                         const lng = row.Longitudine;
@@ -285,17 +272,28 @@ function updateStats() {
 
 // Funcție pentru populare filtre
 function populateFilters() {
-    const judete = [...new Set(allData.map(item => item.Judet))].sort();
+    const judete = [...new Set(allData.map(item => item.Județ))].sort();
+    const tipuri = [...new Set(allData.map(item => item.Tip))].sort();
+    
     const filterJudet = document.getElementById('filterJudet');
+    const filterTip = document.getElementById('filterTip');
     
     // Golește selectul (exceptând prima opțiune)
     filterJudet.innerHTML = '<option value="">Toate județele</option>';
+    filterTip.innerHTML = '<option value="">Toate tipurile</option>';
     
     judete.forEach(judet => {
         const option = document.createElement('option');
         option.value = judet;
         option.textContent = judet;
         filterJudet.appendChild(option);
+    });
+    
+    tipuri.forEach(tip => {
+        const option = document.createElement('option');
+        option.value = tip;
+        option.textContent = tip;
+        filterTip.appendChild(option);
     });
 }
 
@@ -306,6 +304,9 @@ function filterMarkers() {
     const searchTerm = document.getElementById('search').value.toLowerCase();
     
     let vizibile = 0;
+    
+    // Șterge toți marker-ele din cluster
+    markerClusterGroup.clearLayers();
     
     allMarkers.forEach(marker => {
         let includeMarker = true;
@@ -328,8 +329,6 @@ function filterMarkers() {
         if (includeMarker) {
             markerClusterGroup.addLayer(marker);
             vizibile++;
-        } else {
-            markerClusterGroup.removeLayer(marker);
         }
     });
     
@@ -344,6 +343,7 @@ function resetFilters() {
     document.getElementById('search').value = '';
     
     // Afișare toate marker-ele
+    markerClusterGroup.clearLayers();
     allMarkers.forEach(marker => {
         markerClusterGroup.addLayer(marker);
     });
@@ -408,4 +408,3 @@ window.mapApp = {
     allData,
     map
 };
-
