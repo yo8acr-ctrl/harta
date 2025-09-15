@@ -1,37 +1,9 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-// Adaugă în head-ul HTML:
-// <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-// <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-
-// Înlocuiește addMarker cu:
-const markerCluster = L.markerClusterGroup().addTo(map);
-
-// În funcția addMarker, înlocuiește:
-// marker.addTo(map);
-// cu:
-markerCluster.addLayer(marker);
-// Adaugă în HTML:
-<input type="text" id="search" placeholder="Căutare unități...">
-
-// Adaugă în script.js:
-document.getElementById('search').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    
-    allMarkers.forEach(marker => {
-        const nume = marker.getPopup().getContent().toLowerCase();
-        if (nume.includes(searchTerm)) {
-            marker.addTo(map);
-        } else {
-            marker.remove();
-        }
-    });
-});
-<button onclick="exportMap()">Exportă harta</button>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hartă Interactivă - Unități de Învățământ</title>
+    <title>Hartă Interactivă - Unități de Învățământ din România</title>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -45,11 +17,19 @@ document.getElementById('search').addEventListener('input', function(e) {
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-map-marked-alt"></i> Harta Unităților de Învățământ</h1>
+            <h1><i class="fas fa-map-marked-alt"></i> Harta Unităților de Învățământ din România</h1>
+            <p class="subtitle">Vizualizare interactivă a școlilor, liceelor și grădinițelor</p>
+            
             <div class="controls">
+                <div class="search-container">
+                    <input type="text" id="search" placeholder="Caută după nume...">
+                    <i class="fas fa-search"></i>
+                </div>
+                
                 <select id="filterJudet">
                     <option value="">Toate județele</option>
                 </select>
+                
                 <select id="filterTip">
                     <option value="">Toate tipurile</option>
                     <option value="Școală Gimnazială">Școală Gimnazială</option>
@@ -57,24 +37,74 @@ document.getElementById('search').addEventListener('input', function(e) {
                     <option value="Grădiniță">Grădiniță</option>
                     <option value="Colegiu">Colegiu</option>
                 </select>
+                
+                <button id="resetFilters"><i class="fas fa-redo"></i> Resetează</button>
             </div>
         </header>
         
         <main>
             <div id="map"></div>
+            
             <div id="stats">
                 <div class="stat-card">
-                    <h3>Total Unități</h3>
-                    <p id="totalUnitati">0</p>
+                    <div class="stat-icon">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Unități</h3>
+                        <p id="totalUnitati">0</p>
+                    </div>
                 </div>
+                
                 <div class="stat-card">
-                    <h3>Județe Acoperite</h3>
-                    <p id="totalJudete">0</p>
+                    <div class="stat-icon">
+                        <i class="fas fa-map-pin"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Județe Acoperite</h3>
+                        <p id="totalJudete">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Vizibile</h3>
+                        <p id="vizibileUnitati">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <h3>Legenda</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <span>Școală Gimnazială</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                    <span>Liceu</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f39c12;"></div>
+                    <span>Grădiniță</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #9b59b6;"></div>
+                    <span>Colegiu</span>
                 </div>
             </div>
         </main>
+        
+        <footer>
+            <p>&copy; 2024 Harta Unităților de Învățământ. Toate drepturile rezervate.</p>
+        </footer>
     </div>
-
+<!-- Leaflet MarkerCluster CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
@@ -83,5 +113,7 @@ document.getElementById('search').addEventListener('input', function(e) {
     
     <!-- Script custom -->
     <script src="script.js"></script>
+    <!-- Leaflet MarkerCluster JS -->
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 </body>
 </html>
