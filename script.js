@@ -63,7 +63,7 @@ function addMarker(data) {
 
 // Funcție pentru încărcare date din CSV
 function loadData() {
-    fetch('data/locatii.csv')
+    fetch('/data/locatii.csv')
         .then(response => response.text())
         .then(csvText => {
             // Parsare CSV
@@ -143,4 +143,5 @@ function exportMap() {
     // https://github.com/mapbox/leaflet-image
 }
 // Încărcare date la inițializare
+
 loadData();
