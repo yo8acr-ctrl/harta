@@ -6,7 +6,11 @@
     <title>Hartă Interactivă - Unități de Învățământ din România</title>
     
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
     
     <!-- Font Awesome pentru iconițe -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +21,7 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-map-marked-alt"></i> Harta Unităților de Învățământ din România</h1>
+            <h1><i class="fas fa-map-marked-alt"></i>&nbsp;LeadEI Harta Unităților de Învățământ din România</h1>
             <p class="subtitle">Vizualizare interactivă a școlilor, liceelor și grădinițelor</p>
             
             <div class="controls">
@@ -99,22 +103,20 @@
         </main>
         
         <footer>
-            <p>&copy; 2025 Harta Unităților de Învățământ. Toate drepturile rezervate.</p>
+            <p>© 2025 Harta Unităților de Învățământ LeadEI. Toate drepturile rezervate.</p>
         </footer>
     </div>
-<!-- Leaflet MarkerCluster CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     
     <!-- Papa Parse pentru CSV -->
     <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
     
     <!-- Script custom -->
     <script src="script.js"></script>
-    <!-- Leaflet MarkerCluster JS -->
-<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-</body>
-</html>
 
+</body></html>
