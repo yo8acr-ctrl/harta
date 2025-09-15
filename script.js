@@ -259,7 +259,27 @@ function loadData() {
             alert('Eroare la conectarea la server. Verifică calea către fișierul CSV.');
         });
 }
-
+// Funcție pentru actualizare statistici (cu debugging)
+function updateStats() {
+    const totalUnitati = allData.length;
+    const judeteArray = allData.map(item => item.Judet);
+    const judeteUnice = [...new Set(judeteArray)];
+    
+    console.log('Toate județele din date:', judeteArray);
+    console.log('Județe unice:', judeteUnice);
+    console.log('Număr județe unice:', judeteUnice.length);
+    
+    // Afișăm frecvența fiecărui județ
+    const frecventaJudete = {};
+    judeteArray.forEach(judet => {
+        frecventaJudete[judet] = (frecventaJudete[judet] || 0) + 1;
+    });
+    console.log('Frecvența județelor:', frecventaJudete);
+    
+    document.getElementById('totalUnitati').textContent = totalUnitati;
+    document.getElementById('totalJudete').textContent = judeteUnice.length;
+    updateVisibleCount();
+}
 // Funcție pentru actualizare statistici
 function updateStats() {
     const totalUnitati = allData.length;
@@ -408,4 +428,5 @@ window.mapApp = {
     allData,
     map
 };
+
 
