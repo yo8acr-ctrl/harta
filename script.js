@@ -63,19 +63,78 @@ function addMarker(data) {
 
 // Funcție pentru încărcare date din CSV
 function loadData() {
-    fetch('/data/locatii.csv')
-        .then(response => response.text())
+    showLoading();
+    
+    console.log('Începem încărcarea datelor...');
+    
+    fetch('data/locatii.csv')
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(csvText => {
-            // Parsare CSV
+            console.log('CSV text primit:', csvText.substring(0, 200));
+            
             Papa.parse(csvText, {
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
-                    allData = results.data.filter(row => row.Latitudine && row.Longitudine);
+                    console.log('Rezultate parsare:', results);
+                    
+                    // Corectare date - procesare coordonate și reordonare coloane
+                    allData = results.data.map(row => {
+                        // Corectare coordonate - elimină punctele suplimentare
+                        let lat = row.Latitude;
+                        let lng = row.Longitude;
+                        
+                        // Transformă "460.623.309" în "46.0623309"
+                        if (lat && typeof lat === 'string') {
+                            lat = lat.replace(/\./g, '');
+                            lat = lat.substring(0, 2) + '.' + lat.substring(2);
+                        }
+                        
+                        if (lng && typeof lng === 'string') {
+                            lng = lng.replace(/\./g, '');
+                            lng = lng.substring(0, 2) + '.' + lng.substring(2);
+                        }
+                        
+                        // Returnează obiectul cu structura corectă
+                        return {
+                            'Județ': row.Județ,
+                            'Nume Unități': row['Nume Unități'],
+                            'Tip': row.Tip,
+                            'Latitudine': lat,
+                            'Longitudine': lng
+                        };
+                    }).filter(row => {
+                        // Verifică dacă coordonatele sunt valide
+                        const lat = parseFloat(row.Latitudine);
+                        const lng = parseFloat(row.Longitudine);
+                        
+                        return !isNaN(lat) && !isNaN(lng) && 
+                               lat > 40 && lat < 50 && 
+                               lng > 20 && lng < 30;
+                    });
+                    
+                    console.log('Date corectate:', allData);
+                    console.log(`Număr total de unități valide: ${allData.length}`);
+                    
+                    if (allData.length === 0) {
+                        alert('Nu s-au găsit unități cu coordonate valide. Verifică fișierul CSV.');
+                        hideLoading();
+                        return;
+                    }
                     
                     // Adăugare marker-e
-                    allData.forEach(data => {
+                    allData.forEach((data, index) => {
                         const marker = addMarker(data);
-                        if (marker) allMarkers.push(marker);
+                        if (marker) {
+                            allMarkers.push(marker);
+                            markerClusterGroup.addLayer(marker);
+                        }
                     });
                     
                     // Actualizare statistici
@@ -83,10 +142,27 @@ function loadData() {
                     
                     // Populare filtre
                     populateFilters();
+                    
+                    // Ascundere loading
+                    hideLoading();
+                    
+                    // Adăugare event listeners
+                    addEventListeners();
+                    
+                    console.log(`Încărcate ${allData.length} unități de învățământ`);
+                },
+                error: function(error) {
+                    console.error('Eroare la parsare CSV:', error);
+                    hideLoading();
+                    alert('Eroare la parsarea datelor. Verifică formatul CSV.');
                 }
             });
         })
-        .catch(error => console.error('Eroare la încărcare date:', error));
+        .catch(error => {
+            console.error('Eroare la încărcare date:', error);
+            hideLoading();
+            alert('Eroare la conectarea la server. Verifică calea către fișierul CSV.');
+        });
 }
 
 // Funcție pentru actualizare statistici
@@ -145,3 +221,4 @@ function exportMap() {
 // Încărcare date la inițializare
 
 loadData();
+
