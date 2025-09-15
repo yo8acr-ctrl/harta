@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+// Adaugă în head-ul HTML:
+// <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+// <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+
+// Înlocuiește addMarker cu:
+const markerCluster = L.markerClusterGroup().addTo(map);
+
+// În funcția addMarker, înlocuiește:
+// marker.addTo(map);
+// cu:
+markerCluster.addLayer(marker);
+// Adaugă în HTML:
+<input type="text" id="search" placeholder="Căutare unități...">
+
+// Adaugă în script.js:
+document.getElementById('search').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    
+    allMarkers.forEach(marker => {
+        const nume = marker.getPopup().getContent().toLowerCase();
+        if (nume.includes(searchTerm)) {
+            marker.addTo(map);
+        } else {
+            marker.remove();
+        }
+    });
+});
+<button onclick="exportMap()">Exportă harta</button>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hartă Interactivă - Unități de Învățământ</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Font Awesome pentru iconițe -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stiluri custom -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-map-marked-alt"></i> Harta Unităților de Învățământ</h1>
+            <div class="controls">
+                <select id="filterJudet">
+                    <option value="">Toate județele</option>
+                </select>
+                <select id="filterTip">
+                    <option value="">Toate tipurile</option>
+                    <option value="Școală Gimnazială">Școală Gimnazială</option>
+                    <option value="Liceu">Liceu</option>
+                    <option value="Grădiniță">Grădiniță</option>
+                    <option value="Colegiu">Colegiu</option>
+                </select>
+            </div>
+        </header>
+        
+        <main>
+            <div id="map"></div>
+            <div id="stats">
+                <div class="stat-card">
+                    <h3>Total Unități</h3>
+                    <p id="totalUnitati">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Județe Acoperite</h3>
+                    <p id="totalJudete">0</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Papa Parse pentru CSV -->
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+    
+    <!-- Script custom -->
+    <script src="script.js"></script>
+</body>
+</html>
