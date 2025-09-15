@@ -104,7 +104,7 @@ function createCustomIcon(type, name) {
 
 // Funcție pentru adăugare marker
 function addMarker(data) {
-    const { Judet, 'Nume Unități': nume, Tip, Latitudine, Longitudine } = data;
+    const { Judet, 'Nume Unitati': nume, Tip, Latitudine, Longitudine } = data;
     
     if (!Latitudine || !Longitudine) return null;
 
@@ -195,7 +195,21 @@ function loadData() {
                         alert('Fișierul CSV este gol sau are format greșit.');
                         return;
                     }
-                    
+                    // In loadData function, when filtering:
+allData = results.data.filter(row => {
+    const lat = row.Latitudine;
+    const lng = row.Longitudine;
+    
+    // Verifică dacă coordonatele sunt valide
+    const latValid = lat && lat !== '' && !isNaN(parseFloat(lat));
+    const lngValid = lng && lng !== '' && !isNaN(parseFloat(lng));
+    
+    if (!latValid || !lngValid) {
+        console.log('Linie invalidă:', row);
+    }
+    
+    return latValid && lngValid;
+});
                     // Verifică prima linie
                     console.log('Prima linie:', results.data[0]);
                     
@@ -271,7 +285,7 @@ function updateStats() {
 
 // Funcție pentru populare filtre
 function populateFilters() {
-    const judete = [...new Set(allData.map(item => item.Județ))].sort();
+    const judete = [...new Set(allData.map(item => item.Judet))].sort();
     const filterJudet = document.getElementById('filterJudet');
     
     // Golește selectul (exceptând prima opțiune)
@@ -394,3 +408,4 @@ window.mapApp = {
     allData,
     map
 };
+
