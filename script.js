@@ -263,7 +263,7 @@ function loadData() {
 // Funcție pentru actualizare statistici
 function updateStats() {
     const totalUnitati = allData.length;
-    const judeteUnice = [...new Set(allData.map(item => item.Județ))].length;
+    const judeteUnice = [...new Set(allData.map(item => item.Judet))].length; // Corectat: Judet în loc de Județ
     
     document.getElementById('totalUnitati').textContent = totalUnitati;
     document.getElementById('totalJudete').textContent = judeteUnice;
@@ -272,7 +272,7 @@ function updateStats() {
 
 // Funcție pentru populare filtre
 function populateFilters() {
-    const judete = [...new Set(allData.map(item => item.Județ))].sort();
+    const judete = [...new Set(allData.map(item => item.Judet))].sort(); // Corectat: Judet în loc de Județ
     const tipuri = [...new Set(allData.map(item => item.Tip))].sort();
     
     const filterJudet = document.getElementById('filterJudet');
@@ -408,3 +408,4 @@ window.mapApp = {
     allData,
     map
 };
+
