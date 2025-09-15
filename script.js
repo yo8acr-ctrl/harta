@@ -317,14 +317,20 @@ function loadData() {
         });
 }
 
-// Funcție pentru actualizare statistici (cu normalizare)
+// Funcție pentru actualizare statistici (cu normalizare și detalii)
 function updateStats() {
     const totalUnitati = allData.length;
     const judeteNormalize = allData.map(item => normalizeJudet(item.Judet));
     const judeteUnice = [...new Set(judeteNormalize)];
+    const numarJudeteDinDate = judeteUnice.length;
+    const numarTotalJudete = JUDETE_OFICIALE.length;
+    
+    // Găsim județele lipsă
+    const judeteLipsa = JUDETE_OFICIALE.filter(judet => !judeteUnice.includes(judet));
     
     console.log('Județe normalizate:', judeteUnice);
-    console.log('Număr județe unice:', judeteUnice.length);
+    console.log('Număr județe unice:', numarJudeteDinDate);
+    console.log('Județe lipsă:', judeteLipsa);
     
     // Afișăm frecvența județelor normalizate
     const frecventaJudeteNormalize = {};
@@ -333,11 +339,14 @@ function updateStats() {
     });
     console.log('Frecvența județelor (după normalizare):', frecventaJudeteNormalize);
     
-    // Compară județele cu lista oficială
-    const rezultatComparatie = comparaJudete();
-    
     document.getElementById('totalUnitati').textContent = totalUnitati;
-    document.getElementById('totalJudete').textContent = judeteUnice.length;
+    
+    // Afișăm numărul de județe din date și totalul
+    const judeteElement = document.getElementById('totalJudete');
+    judeteElement.textContent = `${numarJudeteDinDate}/${numarTotalJudete}`;
+    judeteElement.title = `Datele acoperă ${numarJudeteDinDate} din cele ${numarTotalJudete} județe ale României` +
+                          (judeteLipsa.length > 0 ? `\nLipsesc: ${judeteLipsa.join(', ')}` : '');
+    
     updateVisibleCount();
 }
 
