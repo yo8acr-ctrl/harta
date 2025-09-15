@@ -339,15 +339,61 @@ function updateStats() {
     });
     console.log('Frecvența județelor (după normalizare):', frecventaJudeteNormalize);
     
-    document.getElementById('totalUnitati').textContent = totalUnitati;
+    // Actualizăm elementele din card-uri
+    document.querySelector('#stats .stat-card:nth-child(1) .stat-content p').textContent = totalUnitati;
     
     // Afișăm numărul de județe din date și totalul
-    const judeteElement = document.getElementById('totalJudete');
+    const judeteElement = document.querySelector('#stats .stat-card:nth-child(2) .stat-content p');
     judeteElement.textContent = `${numarJudeteDinDate}/${numarTotalJudete}`;
-    judeteElement.title = `Datele acoperă ${numarJudeteDinDate} din cele ${numarTotalJudete} județe ale României` +
-                          (judeteLipsa.length > 0 ? `\nLipsesc: ${judeteLipsa.join(', ')}` : '');
     
-    updateVisibleCount();
+    // Adăugăm tooltip informativ
+    let tooltipText = `Datele acoperă ${numarJudeteDinDate} din cele ${numarTotalJudete} județe ale României`;
+    if (judeteLipsa.length > 0) {
+        tooltipText += `\n\nJudețe lipsă din date:\n${judeteLipsa.join(', ')}`;
+    }
+    judeteElement.setAttribute('title', tooltipText);
+    judeteElement.style.cursor = 'help';
+    judeteElement.style.borderBottom = '1px dotted #999';
+    
+    // Actualizăm numărul de unități vizibile
+    document.querySelector('#stats .stat-card:nth-child(3) .stat-content p').textContent = allMarkers.length;
+    
+    // Adăugăm un element pentru județele lipsă dacă nu există
+    let judeteLipsaElement = document.getElementById('judeteLipsa');
+    if (!judeteLipsaElement) {
+        judeteLipsaElement = document.createElement('div');
+        judeteLipsaElement.id = 'judeteLipsa';
+        judeteLipsaElement.style.cssText = `
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #856404;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        `;
+        
+        // Îl adăugăm după secțiunea de statistici
+        const statsSection = document.getElementById('stats');
+        if (statsSection) {
+            statsSection.parentNode.insertBefore(judeteLipsaElement, statsSection.nextSibling);
+        }
+    }
+    
+    // Afișăm județele lipsă
+    if (judeteLipsa.length > 0) {
+        judeteLipsaElement.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="font-size: 18px;">⚠️</span>
+                <strong>Atenție: Lipsesc ${judeteLipsa.length} județe din date:</strong>
+            </div>
+            <div style="color: #d63031; font-weight: 500;">${judeteLipsa.join(', ')}</div>
+        `;
+        judeteLipsaElement.style.display = 'block';
+    } else {
+        judeteLipsaElement.style.display = 'none';
+    }
 }
 
 // Funcție pentru populare filtre
@@ -413,7 +459,7 @@ function filterMarkers() {
     });
     
     // Actualizare număr vizibile
-    document.getElementById('vizibileUnitati').textContent = vizibile;
+    document.querySelector('#stats .stat-card:nth-child(3) .stat-content p').textContent = vizibile;
 }
 
 // Funcție pentru resetare filtre
@@ -428,12 +474,8 @@ function resetFilters() {
         markerClusterGroup.addLayer(marker);
     });
     
-    updateVisibleCount();
-}
-
-// Funcție pentru actualizare număr vizibile
-function updateVisibleCount() {
-    document.getElementById('vizibileUnitati').textContent = allMarkers.length;
+    // Actualizare număr vizibile
+    document.querySelector('#stats .stat-card:nth-child(3) .stat-content p').textContent = allMarkers.length;
 }
 
 // Funcție pentru afișare loading
